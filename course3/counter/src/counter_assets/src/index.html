@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>counter</title>
+    <base href="/" />
+    <link rel="icon" href="favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <main>
+      <img src="logo.png" alt="DFINITY logo" />
+      <form action="#">
+        <div>
+          <label>当前计数器值: </label><label id="current-count" > </label> <button id="button-inc" onclick="window.counterInc()">计数+1 </button>
+        </div>
+        <div>
+          <label>初始化计数器: &nbsp;</label>
+          <input id="init-counter" alt="Init counter" type="number" />
+          <button id="button-init" onclick="window.initSettingCounter()">设置</button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
