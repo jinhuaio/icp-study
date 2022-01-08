@@ -1,0 +1,4 @@
+service : {
+  greet: (text) -> (text);
+  heapsort: (vec int) -> (vec int) query;
+}
