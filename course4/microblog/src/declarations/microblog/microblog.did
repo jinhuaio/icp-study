@@ -1,14 +1,16 @@
 type Time = int;
+type Microblog = 
+ service {
+   follow: (principal) -> ();
+   follows: () -> (vec principal) query;
+   greet: (text) -> (text);
+   post: (text) -> ();
+   posts: (Time) -> (vec Message) query;
+   timeline: (Time) -> (vec Message);
+ };
 type Message = 
  record {
    msg: text;
    time: Time;
  };
-service : {
-  follow: (principal) -> ();
-  follows: () -> (vec principal) query;
-  greet: (text) -> (text);
-  post: (text) -> ();
-  posts: (Time) -> (vec Message) query;
-  timeline: (Time) -> (vec Message);
-}
+service : () -> Microblog

@@ -3,7 +3,9 @@ import Iter "mo:base/Iter";
 import Principal "mo:base/Principal";
 import Time "mo:base/Time";
 
-actor {
+shared (install) actor class Microblog() {
+    private stable var owner : Principal = install.caller;
+    
     public func greet(name : Text) : async Text {
         return "Hello, " # name # "!";
     };
@@ -34,7 +36,7 @@ actor {
     stable var messages : List.List<Message> = List.nil();
 
     public shared (msg) func post(text: Text) : async () {
-        assert(Principal.toText(msg.caller) == "45ah2-jq73d-4ampd-3zvxr-lds2r-z4jhj-kr6qa-4zsn3-bij2p-laq4p-yae");
+        assert(msg.caller == owner);
         messages := List.push({msg = text;time = Time.now()},messages);
     };
 
