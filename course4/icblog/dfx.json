@@ -1,0 +1,55 @@
+{
+  "canisters": {
+    "icblog": {
+      "main": "src/icblog/main.mo",
+      "type": "motoko"
+    },
+    "icblog1": {
+      "main": "src/icblog/main.mo",
+      "type": "motoko"
+    },
+    "icblog2": {
+      "main": "src/icblog/main.mo",
+      "type": "motoko"
+    },
+    "icblog3": {
+      "main": "src/icblog/main.mo",
+      "type": "motoko"
+    },
+    "icblog4": {
+      "main": "src/icblog/main.mo",
+      "type": "motoko"
+    },
+    "icblog5": {
+      "main": "src/icblog/main.mo",
+      "type": "motoko"
+    },
+    "icblog_assets": {
+      "dependencies": [
+        "icblog"
+      ],
+      "frontend": {
+        "entrypoint": "src/icblog_assets/src/index.html"
+      },
+      "source": [
+        "src/icblog_assets/assets",
+        "dist/icblog_assets/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "dfx": "0.8.4",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
