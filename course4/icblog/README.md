@@ -8,16 +8,16 @@
 总体方案思路：对timeline方法调用canister.posts()方法的查询结果使用缓存机制，以便在下一次的查询中从当前canister的本地缓存中获取，以提高查询效率。
 
 详细实现的关键步骤：
-1、在调用关注微博方法 follow(id: Principal) 中，同时调用对方canister的订阅方法 详细见 doSubscribe(tagId: Principal)
-2、在调用对方canister的订阅方法 await tagCanister.subscribe(0) 时，对方将返回其微博的所有历史消息内容，此时获取到所有历史消息内容后，对消息进行缓存至本地变量中var messagesCache
-3、若此时对方的canister发布新的微博消息，此时在func post(text: Text) 方法中，将会同时调用 func broadcastToSubscribers(msg: Message) 分发给订阅者新消息
-4、订阅者将在func receiveSubscribe(msg: Message) 方法中获取到推送过来的新消息，此时同样将新消息缓存在本地变量 var messagesCache 中。
-5、此时，若通过 func timeline(since: Time.Time) 方法查询本canister关注的消息列表，若本地已有缓存，则优先从本地缓存 var messagesCache 中查找；若本地尚未有对该canister进行过缓存（通过var initMsgCache变量来标记是否有记录过缓存），则先通过对方的canister.posts(0)获取所有消息，然后再次缓存至本地变量 var messagesCache
-6、因 var messagesCache 没有做成持久化，因此在canister升级时，缓存数据会丢失，此时会在首次调用 timeline 方法时，会重新获取一次所有信息，并对其再次缓存在本地。
+* 1、在调用关注微博方法 follow(id: Principal) 中，同时调用对方canister的订阅方法 详细见 doSubscribe(tagId: Principal)
+* 2、在调用对方canister的订阅方法 await tagCanister.subscribe(0) 时，对方将返回其微博的所有历史消息内容，此时获取到所有历史消息内容后，对消息进行缓存至本地变量中var messagesCache
+* 3、若此时对方的canister发布新的微博消息，此时在func post(text: Text) 方法中，将会同时调用 func broadcastToSubscribers(msg: Message) 分发给订阅者新消息
+* 4、订阅者将在func receiveSubscribe(msg: Message) 方法中获取到推送过来的新消息，此时同样将新消息缓存在本地变量 var messagesCache 中。
+* 5、此时，若通过 func timeline(since: Time.Time) 方法查询本canister关注的消息列表，若本地已有缓存，则优先从本地缓存 var messagesCache 中查找；若本地尚未有对该canister进行过缓存（通过var initMsgCache变量来标记是否有记录过缓存），则先通过对方的canister.posts(0)获取所有消息，然后再次缓存至本地变量 var messagesCache
+* 6、因 var messagesCache 没有做成持久化，因此在canister升级时，缓存数据会丢失，此时会在首次调用 timeline 方法时，会重新获取一次所有信息，并对其再次缓存在本地。
 
-思考：该方案也存在一些缺陷，若我有太多的粉丝关注了我的微博，那么在我发微博消息时 func post(text: Text) ，会因需要广播给所有的粉丝，因此同样会存在性能瓶颈，这里是否有办法能在canister中执行多线程的异步后台任务？
+**思考：该方案也存在一些缺陷，若我有太多的粉丝关注了我的微博，那么在我发微博消息时 func post(text: Text) ，会因需要广播给所有的粉丝，因此同样会存在性能瓶颈，这里是否有办法能在canister中执行多线程的异步后台任务？**
 
-备注：关于上述方案可以参考本项目 src/icblog/main.mo 的代码实现。
+**备注：关于上述方案可以参考本项目 src/icblog/main.mo 的代码实现。**
 
 ## 第1步：在本地部署和运行
 
