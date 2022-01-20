@@ -13,7 +13,7 @@ shared (install) actor class Microblog() {
     stable let password : Text = "p123456";
 
     public type Message = {
-        msg: Text;
+        content: Text;
         time: Time.Time;
         author: ?Text;
         };
@@ -51,7 +51,7 @@ shared (install) actor class Microblog() {
     public shared (msg) func post(text: Text,pass: Text): async () {
         // assert(msg.caller == owner);
         assert(password == pass);
-        messages := List.push({msg = text;time = Time.now();author = authorName},messages);
+        messages := List.push({content = text;time = Time.now();author = authorName},messages);
     };
 
     public shared query func posts(since: Time.Time) : async [Message] {

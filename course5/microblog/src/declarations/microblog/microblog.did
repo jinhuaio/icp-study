@@ -13,7 +13,7 @@ type Microblog =
 type Message = 
  record {
    author: opt text;
-   msg: text;
+   content: text;
    time: Time;
  };
 type Follow = 

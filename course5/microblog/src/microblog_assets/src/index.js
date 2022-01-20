@@ -47,10 +47,14 @@ async function post() {
 
 var num_posts = 0;
 async function load_posts() {
-  let posts = await microblog.posts(0);
-  if (num_posts == posts.length) return; 
-  num_posts = posts.length;
-  tableDisplay("posts",posts);
+  try {
+    let posts = await microblog.posts(0);
+    if (num_posts == posts.length) return; 
+    num_posts = posts.length;
+    tableDisplay("posts",posts);
+  } catch (e) {
+    console.warn("load_posts: " + e);
+  }
 }
 
 function tableDisplay(sectionId,messages) {
@@ -90,7 +94,7 @@ function tableDisplay(sectionId,messages) {
       cell.style.cellspacing="0";
       cell.style.cellpadding="0";
       cell.colSpan="2";
-      var cellText = document.createTextNode(msgItem.msg);
+      var cellText = document.createTextNode(msgItem.content);
       cell.appendChild(cellText);
       row2.appendChild(cell);
       // 增加到tbody
@@ -106,7 +110,13 @@ function tableDisplay(sectionId,messages) {
 var author_name = "";
 async function load_author_name() {
   let author_name_section = document.getElementById("author_name");
-  let name = await microblog.get_name();
+  var name = "";
+  try {
+    name = await microblog.get_name();
+  } catch (e) {
+    console.warn("load_author_name: " + e);
+  }
+  
   if (author_name == name) return;
   author_name = (name == null ? "?" : name);
   author_name_section.replaceChildren([]);
@@ -125,8 +135,13 @@ function load_canisterid() {
 
 var num_follows = 0;
 async function load_follows() {
-  let follows = await microblog.follows();
-  if (num_follows == follows.length) return; 
+  var follows = null;
+  try {
+    follows = await microblog.follows();
+  } catch (e) {
+    console.warn("load_follows: " + e);
+  }
+  if (follows == null || num_follows == follows.length) return; 
   num_follows = follows.length;
   followsDisplay(follows);
 }
@@ -183,8 +198,21 @@ function followsDisplay(follows) {
 }
 
 async function load_timeline(cid) {
-  let posts = await microblog.timeline(cid,0);
+  var posts = null;
+  try{
+    posts = await microblog.timeline(cid,0);
+  } catch (e) {
+    console.warn("load_timeline: " + e);
+  }
+  if (posts == null) {
+    return;
+  }
   tableDisplay("timeline",posts);
+}
+
+function loadInterval() {
+  load_follows();
+  load_posts();
 }
 
 function load() {
@@ -195,9 +223,7 @@ function load() {
   load_follows();
   load_timeline("");
   load_author_name();
-  setInterval(load_author_name,3000);
-  setInterval(load_posts,3000);
-  setInterval(load_follows,3000);
+  setInterval(loadInterval,3000);
 }
 
 window.onload = load

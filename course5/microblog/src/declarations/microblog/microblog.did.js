@@ -2,7 +2,7 @@ export const idlFactory = ({ IDL }) => {
   const Follow = IDL.Record({ 'pid' : IDL.Text, 'author' : IDL.Opt(IDL.Text) });
   const Time = IDL.Int;
   const Message = IDL.Record({
-    'msg' : IDL.Text,
+    'content' : IDL.Text,
     'time' : Time,
     'author' : IDL.Opt(IDL.Text),
   });

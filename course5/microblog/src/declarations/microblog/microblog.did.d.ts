@@ -1,7 +1,7 @@
 import type { Principal } from '@dfinity/principal';
 export interface Follow { 'pid' : string, 'author' : [] | [string] }
 export interface Message {
-  'msg' : string,
+  'content' : string,
   'time' : Time,
   'author' : [] | [string],
 }
