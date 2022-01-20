@@ -109,6 +109,7 @@ function tableDisplay(sectionId,messages) {
 
 var author_name = "";
 async function load_author_name() {
+  let my_blog_section = document.getElementById("my_blog");
   let author_name_section = document.getElementById("author_name");
   var name = "";
   try {
@@ -119,10 +120,17 @@ async function load_author_name() {
   
   if (author_name == name) return;
   author_name = (name == null ? "?" : name);
+
+  my_blog_section.innerText = author_name;
   author_name_section.replaceChildren([]);
   let namep = document.createElement("a");
   namep.innerText = author_name;
   author_name_section.appendChild(namep);
+
+  my_blog_section.replaceChildren([]);
+  let blog = document.createElement("a");
+  blog.innerText = author_name;
+  my_blog_section.appendChild(blog);
 }
 
 function load_canisterid() {
@@ -174,6 +182,7 @@ function followsDisplay(follows) {
         var cellText1 = document.createElement("button");
         cellText1.innerText = "Name: " + follow.author;
         cellText1.setAttribute("pid",follow.pid); 
+        cellText1.setAttribute("blogName",follow.author); 
         cell1.appendChild(cellText1);
         row.appendChild(cell1);
       // 增加到tbody
@@ -191,7 +200,13 @@ function followsDisplay(follows) {
      tdb[ii].addEventListener("click", async (e) => {
       e.preventDefault();
       let pid = e.target.getAttribute("pid");
-      await load_timeline(pid);
+      let name = e.target.getAttribute("blogName");
+      let blogName = document.getElementById("blogName");
+      blogName.innerText = "  Loading for " + name + " ... ";
+      let table_section = document.getElementById("timeline");
+      table_section.replaceChildren([]);
+      let count = await load_timeline(pid);
+      blogName.innerText = "  found " + count + " article from " + name;
       return false;
     });
   };
@@ -199,15 +214,23 @@ function followsDisplay(follows) {
 
 async function load_timeline(cid) {
   var posts = null;
+  let blogName = document.getElementById("blogName");
+  if (cid == "") {
+    blogName.innerText = "  Loading ... ";
+  }
   try{
     posts = await microblog.timeline(cid,0);
   } catch (e) {
     console.warn("load_timeline: " + e);
   }
   if (posts == null) {
-    return;
+    blogName.innerText = "  found 0 article ";
+    return 0;
+  } else {
+    blogName.innerText = "  found " + posts.length + " article ";
   }
   tableDisplay("timeline",posts);
+  return posts.length;
 }
 
 function loadInterval() {
@@ -221,8 +244,8 @@ function load() {
   load_canisterid();
   load_posts();
   load_follows();
-  load_timeline("");
   load_author_name();
+  load_timeline("");
   setInterval(loadInterval,3000);
 }
 
