@@ -34,9 +34,15 @@ async function post() {
   post_button.disabled = true;
   let textarea = document.getElementById("message");
   let text = textarea.value;
-  await microblog.post(text);
+  let pass = document.getElementById("pass");
+  try {
+    await microblog.post(text,pass.value.toString());
+    textarea.value = "";
+  } catch (error) { 
+    alert("发送失败，请检查密码是否正确\n" + error);
+  }
   post_button.disabled = false;
-  textarea.value = "";
+  
 }
 
 var num_posts = 0;
@@ -59,32 +65,36 @@ function tableDisplay(sectionId,messages) {
       var row = document.createElement("tr");
       let msgItem = messages[j];
 
-        // 添加列td: msg
-        var cell = document.createElement("td");
-        cell.style.border=0;
-        cell.style.cellspacing="0";
-        cell.style.cellpadding="0";
-        var cellText = document.createTextNode(" "+j+" "+msgItem.msg);
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-
+      var cell2 = document.createElement("td");
+        cell2.style.border=0;
+        cell2.style.cellspacing="0";
+        cell2.style.cellpadding="0";
+        var cellText2 = document.createTextNode(" # "+j + " # Post Time ："+getdate(msgItem.time) + " ");
+        cell2.appendChild(cellText2);
+        row.appendChild(cell2);
+        
         var cell1 = document.createElement("td");
         cell1.style.border=0;
         cell1.style.cellspacing="0";
         cell1.style.cellpadding="0";
-        var cellText1 = document.createTextNode("作者："+msgItem.author);
+        var cellText1 = document.createTextNode("Author："+msgItem.author);
         cell1.appendChild(cellText1);
         row.appendChild(cell1);
-
-        var cell2 = document.createElement("td");
-        cell2.style.border=0;
-        cell2.style.cellspacing="0";
-        cell2.style.cellpadding="0";
-        var cellText2 = document.createTextNode("时间："+getdate(msgItem.time) + " ");
-        cell2.appendChild(cellText2);
-        row.appendChild(cell2);
       // 增加到tbody
       tblBody.appendChild(row);
+
+      var row2 = document.createElement("tr");
+      // 添加列td: msg
+      var cell = document.createElement("td");
+      cell.style.border=0;
+      cell.style.cellspacing="0";
+      cell.style.cellpadding="0";
+      cell.colSpan="2";
+      var cellText = document.createTextNode(msgItem.msg);
+      cell.appendChild(cellText);
+      row2.appendChild(cell);
+      // 增加到tbody
+      tblBody.appendChild(row2);
   }
   // 把tbody放入table中
   tbl.appendChild(tblBody);
@@ -113,15 +123,81 @@ function load_canisterid() {
   canid.appendChild(namep);
 }
 
+var num_follows = 0;
+async function load_follows() {
+  let follows = await microblog.follows();
+  if (num_follows == follows.length) return; 
+  num_follows = follows.length;
+  followsDisplay(follows);
+}
+
+// 显示关注列表。
+function followsDisplay(follows) {
+  // 获取table位置标签
+  let follows_section = document.getElementById("follows");
+  follows_section.replaceChildren([]);
+  // 创建表节点 和tbody节点
+  var tbl     = document.createElement("table");
+  var tblBody = document.createElement("tbody");
+  for (var j = 0; j < follows.length; j++) {
+      // 添加行tr
+      var row = document.createElement("tr");
+      let follow = follows[j];
+
+      var cell2 = document.createElement("td");
+        cell2.style.border=0;
+        cell2.style.cellspacing="0";
+        cell2.style.cellpadding="0";
+        var cellText2 = document.createTextNode(" # "+j + " # CanisterID ："+follow.pid + " ");
+        cell2.appendChild(cellText2);
+        row.appendChild(cell2);
+        
+        var cell1 = document.createElement("td");
+        cell1.style.border=0;
+        cell1.style.cellspacing="0";
+        cell1.style.cellpadding="0";
+        var cellText1 = document.createElement("button");
+        cellText1.innerText = "Name: " + follow.author;
+        cellText1.setAttribute("pid",follow.pid); 
+        cell1.appendChild(cellText1);
+        row.appendChild(cell1);
+      // 增加到tbody
+      tblBody.appendChild(row);
+  }
+  // 把tbody放入table中
+  tbl.appendChild(tblBody);
+  // table put to body
+  follows_section.appendChild(tbl);
+  tbl.setAttribute("border", "0");
+
+  var tdb = document.querySelectorAll("td button");
+  var ii;
+  for (ii = 0; ii < tdb.length; ii++) {
+     tdb[ii].addEventListener("click", async (e) => {
+      e.preventDefault();
+      let pid = e.target.getAttribute("pid");
+      await load_timeline(pid);
+      return false;
+    });
+  };
+}
+
+async function load_timeline(cid) {
+  let posts = await microblog.timeline(cid,0);
+  tableDisplay("timeline",posts);
+}
 
 function load() {
   let post_button = document.getElementById("post");
   post_button.onclick = post;
   load_canisterid();
   load_posts();
-  load_author_name()
-  setInterval(load_posts,3000);
+  load_follows();
+  load_timeline("");
+  load_author_name();
   setInterval(load_author_name,3000);
+  setInterval(load_posts,3000);
+  setInterval(load_follows,3000);
 }
 
 window.onload = load

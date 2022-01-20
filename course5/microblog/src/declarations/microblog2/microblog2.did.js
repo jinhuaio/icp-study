@@ -1,18 +1,12 @@
 export const idlFactory = ({ IDL }) => {
   const Time = IDL.Int;
-  const Message = IDL.Record({
-    'msg' : IDL.Text,
-    'time' : Time,
-    'author' : IDL.Opt(IDL.Text),
-  });
+  const Message = IDL.Record({ 'msg' : IDL.Text, 'time' : Time });
   const Microblog = IDL.Service({
     'follow' : IDL.Func([IDL.Principal], [], []),
     'follows' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
-    'get_name' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
     'greet' : IDL.Func([IDL.Text], [IDL.Text], []),
     'post' : IDL.Func([IDL.Text], [], []),
     'posts' : IDL.Func([Time], [IDL.Vec(Message)], ['query']),
-    'set_name' : IDL.Func([IDL.Opt(IDL.Text)], [], []),
     'timeline' : IDL.Func([Time], [IDL.Vec(Message)], []),
   });
   return Microblog;

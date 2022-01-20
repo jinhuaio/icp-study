@@ -9,23 +9,26 @@
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
   </head>
   <body>
-    <header><h1>This is the microblog of student Number 86</h1>
-      <nav>
-        <a href="/">首页</a>
-        <a href="/blog.html">博客</a>
-        <a href="/attention.html">我的关注</a>
-        <a href="/about.html">关于</a>
-      </nav>
+    <header><h1>This is the microblog of student No.86</h1>
     </header>
     <main>
-      <label> 作者名字： </label> <label id="author_name"></label> <label> &nbsp;&nbsp;&nbsp; 欢迎关注我的博客CanisterID：</label> <label id="canisterid"></label>
+      <label> Author：</label><label id="author_name"></label><label> &nbsp;&nbsp;&nbsp; My blog CanisterID：</label> <label id="canisterid"></label>
       <br>
-      <label for="message"> 请输入您要发送的微博消息</label>
+      <br>
+      <label for="message">Please enter the message you want to send</label>
       <div>
         <textarea id="message"></textarea>
+        <br>
+        <label>Secret</label><input id="pass"></input>
+        <br>
         <button id="post">Post</button>
       </div>
+      <h3>My Posts</h3>
       <section id="posts"></section>
+      <h3>Following List</h3>
+      <section id="follows"></section>
+      <h3>Timeline</h3>
+      <section id="timeline"></section>
     </main>
   </body>
 </html>
