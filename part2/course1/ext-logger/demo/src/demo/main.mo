@@ -17,7 +17,7 @@ shared(msg) actor class Main() {
   private let OWNER = msg.caller;
 
   //每个Logger canister 存放最大日志条数。
-  private let LOGGER_MESSAGE_MAX_SIZE = 10;
+  private let LOGGER_MESSAGE_MAX_SIZE = 100;
   
   private stable var loggerCanisterIndex : Nat = 0;
   private let loggerWrapperBrt = RBT.RBTree<Nat, Principal>(Nat.compare); //存储创建的 Logger canister
