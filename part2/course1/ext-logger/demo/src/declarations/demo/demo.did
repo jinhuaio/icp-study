@@ -1,0 +1,19 @@
+type View = 
+ record {
+   messages: vec text;
+   start_index: nat;
+ };
+type Stats = 
+ record {
+   bucket_sizes: vec nat;
+   canister_size: nat;
+   log_size: nat;
+   start_index: nat;
+ };
+type Main = 
+ service {
+   append: (vec text) -> () oneway;
+   stats: () -> (Stats);
+   view: (nat, nat) -> (View);
+ };
+service : () -> Main

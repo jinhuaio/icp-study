@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>demo</title>
+    <base href="/" />
+    <link rel="icon" href="favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <main>
+      <header><h1>IC 自动扩展Canister日志</h1>
+      </header>
+      <main>
+        <label> 日志统计：</label><label id="logger_stats"></label>
+        <br>
+        <br>
+        <div>
+          <label for="logger_message">请输入您要增加的日志信息：</label>
+          <textarea id="logger_message"></textarea>
+          <label for="logger_count">数量：</label>
+          <input id="logger_count" type="number"></input>
+          <button id="add">添加</button>
+        </div>
+        <h3>查询日志
+          <label for="logger_from">开始：</label>
+          <input id="logger_from" type="number" value="0"></input>
+          <label for="logger_to">结束：</label>
+          <input id="logger_to" type="number" value="1000"></input>
+          <button id="search">查询</button>
+        </h3>
+        <section id="logger_list"></section>
+      </main>
+    </main>
+  </body>
+</html>
