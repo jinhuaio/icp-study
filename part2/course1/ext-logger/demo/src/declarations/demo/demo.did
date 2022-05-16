@@ -1,6 +1,6 @@
 type View = 
  record {
-   messages: vec text;
+   messages: vec LogInfoDisplay;
    start_index: nat;
  };
 type Stats = 
@@ -15,5 +15,11 @@ type Main =
    append: (vec text) -> () oneway;
    stats: () -> (Stats);
    view: (nat, nat) -> (View);
+ };
+type LogInfoDisplay = 
+ record {
+   canisterId: text;
+   message: text;
+   time: int;
  };
 service : () -> Main

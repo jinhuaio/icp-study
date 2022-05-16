@@ -18,6 +18,16 @@ import { demo } from "../../declarations/demo";
 //   return false;
 // });
 
+function getdate(time) {
+  var t = Number(time / 1000000n);
+  var ns =Number(time % 1000000n);
+  var now = new Date(t),
+        y = now.getFullYear(),
+        m = now.getMonth() + 1,
+        d = now.getDate();
+  return y + "-" + (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d) + " " + now.toTimeString().substr(0, 8) + " " + ns;
+}
+
 async function add() {
   let add_button = document.getElementById("add");
   add_button.disabled = true;
@@ -49,10 +59,12 @@ async function search() {
   search_button.disabled = false;
 }
 
-function tableDisplay(sectionId,messages) {
+function tableDisplay(sectionId,msgs) {
   // 获取table位置标签
   let table_section = document.getElementById(sectionId);
   table_section.replaceChildren([]);
+  let startIndex = Number(msgs.start_index);
+  let messages = msgs.messages;
   // 创建表节点 和tbody节点
   var tbl     = document.createElement("table");
   var tblBody = document.createElement("tbody");
@@ -60,12 +72,12 @@ function tableDisplay(sectionId,messages) {
       // 添加行tr
       var row = document.createElement("tr");
       let msgItem = messages[j];
-
+      
       var cell2 = document.createElement("td");
         cell2.style.border=0;
         cell2.style.cellspacing="0";
         cell2.style.cellpadding="0";
-        var cellText2 = document.createTextNode(" # "+j + " ");
+        var cellText2 = document.createTextNode(" # "+ (startIndex + j) + " # Time ："+getdate(msgItem.time) + " ");
         cell2.appendChild(cellText2);
         row.appendChild(cell2);
         
@@ -73,7 +85,7 @@ function tableDisplay(sectionId,messages) {
         cell1.style.border=0;
         cell1.style.cellspacing="0";
         cell1.style.cellpadding="0";
-        var cellText1 = document.createTextNode("-> "+msgItem);
+        var cellText1 = document.createTextNode(" canister:"+ msgItem.canisterId + " -> "+msgItem.message);
         cell1.appendChild(cellText1);
         row.appendChild(cell1);
       // 增加到tbody
@@ -89,7 +101,9 @@ function tableDisplay(sectionId,messages) {
 async function load_logger_message() {
   var view_msgs = null;
   let logger_list = document.getElementById("logger_list");
-  logger_list.innerText = "  Loading ... ";
+  if (logger_list.value === null || logger_list.value === "") {
+    logger_list.innerText = "  Loading ... ";
+  };
   let from = document.getElementById("logger_from").value;
   let to = document.getElementById("logger_to").value;
   try{
@@ -101,13 +115,16 @@ async function load_logger_message() {
     logger_list.innerText = "  found 0 messages ";
     return 0;
   }
-  tableDisplay("logger_list",view_msgs.messages);
+  tableDisplay("logger_list",view_msgs);
 }
 
 async function load_logger_stats() {
   var stats = null;
   let logger_stats = document.getElementById("logger_stats");
-  logger_stats.innerText = "  Loading ... ";
+  if (logger_stats.value === null || logger_stats.value === "") {
+    logger_stats.innerText = "  Loading ... ";
+  };
+  
   try{
     stats = await demo.stats();
   } catch (e) {

@@ -1,4 +1,9 @@
 import type { Principal } from '@dfinity/principal';
+export interface LogInfoDisplay {
+  'time' : bigint,
+  'message' : string,
+  'canisterId' : string,
+}
 export interface Main {
   'append' : (arg_0: Array<string>) => Promise<undefined>,
   'stats' : () => Promise<Stats>,
@@ -10,5 +15,8 @@ export interface Stats {
   'canister_size' : bigint,
   'start_index' : bigint,
 }
-export interface View { 'messages' : Array<string>, 'start_index' : bigint }
+export interface View {
+  'messages' : Array<LogInfoDisplay>,
+  'start_index' : bigint,
+}
 export interface _SERVICE extends Main {}

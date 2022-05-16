@@ -5,8 +5,13 @@ export const idlFactory = ({ IDL }) => {
     'canister_size' : IDL.Nat,
     'start_index' : IDL.Nat,
   });
+  const LogInfoDisplay = IDL.Record({
+    'time' : IDL.Int,
+    'message' : IDL.Text,
+    'canisterId' : IDL.Text,
+  });
   const View = IDL.Record({
-    'messages' : IDL.Vec(IDL.Text),
+    'messages' : IDL.Vec(LogInfoDisplay),
     'start_index' : IDL.Nat,
   });
   const Main = IDL.Service({
