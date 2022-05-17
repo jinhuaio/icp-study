@@ -36,15 +36,16 @@ async function add() {
   let count = document.getElementById("logger_count");
   let c = count.value;
   try { 
+    //为了方便测试，批量添加日志信息
     const msgs = new Array(c);
     for(var index = 0;index < c;index++){
-      msgs[index] = text;
+      msgs[index] = "批量添加的第 " + index + " 条日志:" + text;
     };
     await demo.append(msgs);
     textarea.value = "";
     // alert("新增成功\n" + msgs + c);
-    load_logger_stats();
-    load_logger_message();
+    await load_logger_stats();
+    await load_logger_message();
   } catch (error) { 
     alert("新增失败\n" + error);
   }
@@ -134,7 +135,7 @@ async function load_logger_stats() {
     logger_stats.innerText = "  logger_stats error ";
     return 0;
   } else {
-    logger_stats.innerText = "canister count: " + stats.canister_size + " log counts: " + stats.log_size;
+    logger_stats.innerText = "每个Canister最大日志数( "+ stats.canister_log_max_size + " ) Canister数量( " + stats.canister_count + " )  日志条数( " + stats.log_size+" )";
   }
 }
 

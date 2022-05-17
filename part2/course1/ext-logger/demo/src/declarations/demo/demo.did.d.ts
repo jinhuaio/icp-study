@@ -10,9 +10,10 @@ export interface Main {
   'view' : (arg_0: bigint, arg_1: bigint) => Promise<View>,
 }
 export interface Stats {
+  'canister_count' : bigint,
   'log_size' : bigint,
   'bucket_sizes' : Array<bigint>,
-  'canister_size' : bigint,
+  'canister_log_max_size' : bigint,
   'start_index' : bigint,
 }
 export interface View {

@@ -8,7 +8,8 @@ module {
         start_index: Nat;
         bucket_sizes: [Nat];
         log_size: Nat;
-        canister_size: Nat;
+        canister_count: Nat;
+        canister_log_max_size: Nat;
     };
 
     //存储的日志信息结构

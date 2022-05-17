@@ -19,9 +19,9 @@ shared(msg) actor class Main() {
   private type LogInfo = T.LogInfo;
   private let OWNER = msg.caller;
   //每个Logger canister 存放最大日志条数。
-  private let LOGGER_MESSAGE_MAX_SIZE = 10;
+  private let LOGGER_MESSAGE_MAX_SIZE = 100;
   
-  private stable var loggerCanisterIndex : Nat = 0;
+  private stable var nextLoggerCanisterIndex : Nat = 0;
   private let loggerWrapperBrt = RBT.RBTree<Nat, Principal>(Nat.compare); //存储创建的 Logger canister
 
   //当前的 Logger canister 
@@ -29,11 +29,11 @@ shared(msg) actor class Main() {
 
   //创建新的 Logger Canister
   private func newLoggerCanister(caller : Principal) : async LoggerWrapper.LoggerWrapper{
-    Debug.print(" newLoggerCanister index : " # Nat.toText(loggerCanisterIndex));
-    let logger : LoggerWrapper.LoggerWrapper = await LoggerWrapper.LoggerWrapper(caller);
+    Debug.print(" newLoggerCanister index : " # Nat.toText(nextLoggerCanisterIndex));
+    let logger : LoggerWrapper.LoggerWrapper = await LoggerWrapper.LoggerWrapper(caller,LOGGER_MESSAGE_MAX_SIZE);
     let principal = Principal.fromActor(logger);
-    loggerWrapperBrt.put(loggerCanisterIndex, principal);
-    loggerCanisterIndex += 1;
+    loggerWrapperBrt.put(nextLoggerCanisterIndex, principal);
+    nextLoggerCanisterIndex += 1;
     logger;
   };
 
@@ -69,7 +69,7 @@ shared(msg) actor class Main() {
   };
 
   // Add a set of messages to the log.
-  public shared (msg) func append(msgs: [Text]) {
+  public shared (msg) func append(msgs: [Text]) : async () {
     ignore await forAppend(toLogInfo(msgs));
   };
 
@@ -88,7 +88,8 @@ shared(msg) actor class Main() {
     switch(currentLogger) {
       case null { 
         // 此处应该返回空值
-        { start_index = 0; bucket_sizes = [0];log_size = 0; canister_size = 0 };
+        Debug.print(" currentLogger is null ");
+        { start_index = 0; bucket_sizes = [0];log_size = 0; canister_count = 0;canister_log_max_size=LOGGER_MESSAGE_MAX_SIZE };
       };
       case (?logger) {
         let buf = Buffer.Buffer<Nat>(0);
@@ -96,7 +97,7 @@ shared(msg) actor class Main() {
         var isFirst = true;
         var logCounts = 0;
         //遍历所有的Logger Canister
-        label LOOP for (i in Iter.range(0, loggerCanisterIndex - 1)) {
+        label LOOP for (i in Iter.range(0, nextLoggerCanisterIndex - 1)) {
           let canisterId : ?Principal = loggerWrapperBrt.get(i);
           switch (canisterId) {
             case null { continue LOOP};
@@ -114,14 +115,22 @@ shared(msg) actor class Main() {
             };
           };
         };
-        { start_index = startIndex; bucket_sizes = buf.toArray();log_size = logCounts; canister_size = loggerCanisterIndex };
+        { start_index = startIndex; bucket_sizes = buf.toArray();log_size = logCounts; canister_count = nextLoggerCanisterIndex;canister_log_max_size=LOGGER_MESSAGE_MAX_SIZE  };
       };
     };
   };
 
   // Return the messages between from and to indice (inclusive).
-  public shared (msg) func view(from: Nat, to: Nat) : async Logger.View<T.LogInfoDisplay> {
+  public shared (msg) func view(from_index: Nat, to_index: Nat) : async Logger.View<T.LogInfoDisplay> {
     // assert(msg.caller == OWNER);
+    var from = from_index;
+    var to = to_index;
+
+    if (from_index > to_index) {
+      // 确保 from < to
+      from := to_index;
+      to := from_index;
+    };
 
     switch(currentLogger) {
       case null { 
@@ -149,8 +158,9 @@ shared(msg) actor class Main() {
               let loggerCanister : LoggerWrapper.LoggerWrapper = actor(cid);
               let viewFrom = if (isFirst) {indexs.from_log_index} else {0};
               let viewTo = if (isFirst) {
-                  if (indexs.start_canister_index == indexs.end_canister_index) {indexs.to_log_index} 
-                  else {LOGGER_MESSAGE_MAX_SIZE}
+                    if (indexs.start_canister_index == indexs.end_canister_index) {indexs.to_log_index} else {LOGGER_MESSAGE_MAX_SIZE}
+                } else if (i < indexs.end_canister_index) {
+                  LOGGER_MESSAGE_MAX_SIZE
                 } else {indexs.to_log_index};
 
               Debug.print("viewFrom : " # Nat.toText(viewFrom) # " viewTo : " # Nat.toText(viewTo));
@@ -186,7 +196,7 @@ shared(msg) actor class Main() {
     var end_index = to / LOGGER_MESSAGE_MAX_SIZE;
 
     //查询的范围超出最大的canister时，则以最大canister为限进行查询
-    end_index := if (end_index>=loggerCanisterIndex) {loggerCanisterIndex - 1} else {end_index};
+    end_index := if (end_index>=nextLoggerCanisterIndex) {nextLoggerCanisterIndex - 1} else {end_index};
 
     let from_index = from % LOGGER_MESSAGE_MAX_SIZE;
     var to_index = to % LOGGER_MESSAGE_MAX_SIZE;

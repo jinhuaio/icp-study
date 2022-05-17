@@ -14,14 +14,14 @@ import Logger "mo:ic-logger/Logger";
 import ExtBuffer "./ExtBuffer";
 import T "./Types";
 
-shared({caller}) actor class LoggerWrapper(installer : Principal) = this {
+shared({caller}) actor class LoggerWrapper(installer : Principal, message_max_size : Nat) = this {
   
   private type LogInfo = T.LogInfo;
-  
+
   private let OWNER = installer;
   
   //每个Logger canister 存放最大日志条数。
-  private let LOGGER_MESSAGE_MAX_SIZE = 10;
+  private let LOGGER_MESSAGE_MAX_SIZE = message_max_size;
 
   private stable var state : Logger.State<LogInfo> = Logger.new<LogInfo>(0, null);
   private let logger = Logger.Logger<LogInfo>(state);

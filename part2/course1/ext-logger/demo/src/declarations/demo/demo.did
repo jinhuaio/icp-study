@@ -6,13 +6,14 @@ type View =
 type Stats = 
  record {
    bucket_sizes: vec nat;
-   canister_size: nat;
+   canister_count: nat;
+   canister_log_max_size: nat;
    log_size: nat;
    start_index: nat;
  };
 type Main = 
  service {
-   append: (vec text) -> () oneway;
+   append: (vec text) -> ();
    stats: () -> (Stats);
    view: (nat, nat) -> (View);
  };
