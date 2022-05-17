@@ -28,4 +28,4 @@ http://localhost:8080/
 
  * 功能展示
 
-![avatar](/demo/pic/show_log.jpg)
+![avatar](./demo/pic/show_log.jpg)
