@@ -1,4 +1,4 @@
-# 动态管理 多人签名 canister Demo
+# 动态管理 多人签名 Canister Demo
 
 ## 安装 didc 工具
 
