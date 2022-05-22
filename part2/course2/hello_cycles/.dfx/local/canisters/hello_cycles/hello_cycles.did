@@ -1,0 +1,5 @@
+service : {
+  transfer: (func () -> (), nat) -> (record {refunded: nat;});
+  wallet_balance: () -> (nat);
+  wallet_receive: () -> (record {accepted: nat64;});
+}
