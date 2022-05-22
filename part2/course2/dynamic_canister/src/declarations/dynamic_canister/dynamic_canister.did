@@ -1,0 +1,27 @@
+type wasm_module = vec nat8;
+type canister_id = principal;
+type anon_class_7_1 = 
+ service {
+   create_canister:
+    (record {
+       controllers: opt vec principal;
+       describe: opt text;
+       maintainers: nat;
+     }) -> (canister_id);
+   delete_canister: (canister_id) -> ();
+   greet: (text) -> (text);
+   install_code:
+    (record {
+       canister_id: canister_id;
+       mode: variant {
+               install;
+               reinstall;
+               upgrade;
+             };
+       wasm: wasm_module;
+     }) -> ();
+   start_canister: (canister_id) -> ();
+   stop_canister: (canister_id) -> ();
+   uninstall_code: (canister_id) -> ();
+ };
+service : () -> anon_class_7_1
