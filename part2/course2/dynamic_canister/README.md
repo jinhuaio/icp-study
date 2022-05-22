@@ -48,10 +48,15 @@ https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
 didc bind -t mo ic.did > src/dynamic_canister/ic.mo
 ```
 
- * 启动和部署
+## 启动、部署和测试调用
+
+* 启动服务
 ```bash
 dfx start --background
+```
 
+* 部署Canister
+```bash
 dfx deploy
 ```
 
@@ -61,7 +66,7 @@ dfx deploy
 import dynamic_canister = "${WALLET_ID:-rrkah-fqaaa-aaaaa-aaaaq-cai}" as "src/declarations/dynamic_canister/dynamic_canister.did";
 ```
 
- * 动态调用create_canister、install_code、canister_status、start_canister、 stop_canister、 delete_canister 方法 执行以下脚本
+ * 动态创建和管理Canister：create_canister、install_code、canister_status、start_canister、 stop_canister、 delete_canister 方法 执行以下脚本
 
 ```bash
 ./test.sh
