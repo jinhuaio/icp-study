@@ -1,0 +1,91 @@
+type anon_class_15_1 = 
+ service {
+   add_propose:
+    (record {
+       action: Action;
+       canister_id: CanisterId;
+       describe: text;
+     }) -> (ProposeResult);
+   create_canister: (record {describe: text;}) -> (CanisterId);
+   get_canister: (CanisterId) -> (opt MultiSignatureCanister);
+   greet: (text) -> (text);
+   show_canisters: () -> (vec MultiSignatureCanister);
+   show_propose: () -> (vec Propose);
+   vote: (record {
+            agree: bool;
+            propose_id: nat;
+          }) -> (VoteResult);
+ };
+type VoteSuccess = record {propose: Propose;};
+type VoteResult = 
+ variant {
+   err: VoteErr;
+   ok: VoteSuccess;
+ };
+type VoteErr = 
+ record {
+   kind:
+    variant {
+      ActionFail;
+      BadProposeID;
+      Expiration;
+      HasBeenExecuted;
+      InvalidController;
+      Other;
+    };
+   message: opt text;
+ };
+type Vote = 
+ record {
+   agree: bool;
+   controller: principal;
+ };
+type Time = int;
+type ProposeSuccess = record {propose: Propose;};
+type ProposeResult = 
+ variant {
+   err: ProposeErr;
+   ok: ProposeSuccess;
+ };
+type ProposeErr = 
+ record {
+   kind: variant {
+           InvalidController;
+           Other;
+         };
+   message: opt text;
+ };
+type Propose = 
+ record {
+   action: Action;
+   canister_id: CanisterId;
+   creator: principal;
+   describe: text;
+   executed: bool;
+   expiry: Time;
+   propose_id: nat;
+   votes: vec Vote;
+ };
+type MultiSignatureCanister = 
+ record {
+   canister_id: CanisterId;
+   controllers: vec principal;
+   describe: text;
+ };
+type CanisterId = principal;
+type Action = 
+ variant {
+   addController: record {newControllers: vec principal;};
+   delete_canister;
+   install: record {wasm: vec nat8;};
+   reinstall: record {wasm: vec nat8;};
+   removeController: record {oldControllers: vec principal;};
+   start_canister;
+   stop_canister;
+   uninstall_code;
+   upgrade: record {wasm: vec nat8;};
+ };
+service : (record {
+             controllers: vec principal;
+             minimum: nat;
+           }) -> anon_class_15_1

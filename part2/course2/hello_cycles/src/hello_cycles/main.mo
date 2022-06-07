@@ -1,12 +1,17 @@
 import Nat "mo:base/Nat";
 import Nat64 "mo:base/Nat64";
 import Cycles "mo:base/ExperimentalCycles";
+import Debug "mo:base/Debug";
+import Principal "mo:base/Principal";
 
-actor HelloCycles  {
-
+shared(initializer) actor class HelloCycles() = this {
+  
+  private stable var canister_owner : Principal = initializer.caller;
   let limit = 10_000_000;
 
-  public func wallet_balance() : async Nat {
+  public shared({ caller }) func wallet_balance() : async Nat {
+    Debug.print("caller = " # Principal.toText(caller) # " canister_owner="#Principal.toText(canister_owner));
+    assert caller == canister_owner;
     return Cycles.balance();
   };
 
